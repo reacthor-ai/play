@@ -27,6 +27,6 @@ export async function GET(req: Request) {
 
     return NextResponse.json(user, {status: 200})
   } catch (error) {
-    return handlePrismaError(error)
+    return NextResponse.json(handlePrismaError(error), { status: 404 })
   }
 }
