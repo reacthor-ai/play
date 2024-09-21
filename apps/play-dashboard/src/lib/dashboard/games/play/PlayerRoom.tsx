@@ -57,9 +57,6 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
   const chatRef1 = useRef<HTMLDivElement>(null)
   const chatRef2 = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
-  const [gameReady, setGameReady] = useState(false);
-
-  const [gameParticipantId, setGameParticipantId] = useState<string>('')
 
   const user = useGetUserQuery()
   const [{
@@ -94,9 +91,6 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
 
         if (existingParticipants && existingParticipants.length >= 2) {
           if (existingParticipants.some(p => p.userId === user.id)) {
-            const currentGameParticipantId = existingParticipants.find(p => p.userId === user.id)
-            setGameParticipantId(currentGameParticipantId.id)
-
             toast.success('Joined');
           } else {
             toast.error('This game is full. You cannot join.');
@@ -195,7 +189,6 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
         setOpponentStatus(opponentPresence ? 'online' : 'offline');
         if (presenceEntries.length === 2) {
           setJoinState('joined');
-          setGameReady(true);
           toast.success('Both players are present. The game is ready!');
 
           setPlayers(prevPlayers => {
