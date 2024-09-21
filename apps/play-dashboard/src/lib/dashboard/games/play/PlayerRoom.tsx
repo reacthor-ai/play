@@ -7,7 +7,7 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
-import {CircleX, Clock, ImageIcon, Info, MessageCircle, MessageSquare, PenToolIcon, UserPlus} from 'lucide-react'
+import {CircleX, Clock, Info, MessageCircle, MessageSquare, PenToolIcon, UserPlus} from 'lucide-react'
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {createClient} from "@/utils/supabase/client"
 import {toast, Toaster} from 'react-hot-toast'
@@ -50,7 +50,6 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
   const [messages1, setMessages1] = useState<Message[]>([])
   const [messages2, setMessages2] = useState<Message[]>([])
   const [timeLeft, setTimeLeft] = useState<number>(game.duration * 60)
-  const [openPopovers, setOpenPopovers] = useState<{ [key: string]: boolean }>({})
   const [opponentStatus, setOpponentStatus] = useState<PlayerStatus>('offline')
   const [players, setPlayers] = useState<PlayerData[]>([])
   const [joinState, setJoinState] = useState<'joining' | 'joined' | 'ready'>('joining');
@@ -93,7 +92,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
           if (existingParticipants.some(p => p.userId === user.id)) {
             toast.success('Joined');
           } else {
-            toast.error('This game is full. You cannot join.');
+            toast.error('full. try another');
           }
           return;
         }
@@ -105,9 +104,9 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
           }, {
             onSettled: (data) => {
               if (data && data.status === 'fulfilled') {
-                toast.success('Successfully joined the game!');
+                toast.success('cool. your in');
               } else {
-                toast.error('Failed to join the game. Please try again.');
+                toast.error('trying to get you in.');
                 router.push(NAVIGATION.Dashboard.Games);
               }
             }
@@ -115,8 +114,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
         } else {
         }
       } catch (error) {
-        console.error('Error handling game joining:', error);
-        toast.error('An error occurred while joining the game.');
+        toast.error('something. must have happened. wait for instructions.');
         router.push(NAVIGATION.Dashboard.Games);
       }
     };
@@ -189,7 +187,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
         setOpponentStatus(opponentPresence ? 'online' : 'offline');
         if (presenceEntries.length === 2) {
           setJoinState('joined');
-          toast.success('Both players are present. The game is ready!');
+          toast.success('all present. begin.');
 
           setPlayers(prevPlayers => {
             if (prevPlayers.length < 2 && opponentPresence) {
@@ -279,7 +277,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
       });
 
       if (!response.ok) {
-        toast.error('An error occurred while submitting the game. Please try again.');
+        toast.error('something. must have happened. wait for instructions.');
         setLoading(false)
       }
 
@@ -290,7 +288,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
         setLoading(false)
         router.push(NAVIGATION.Evaluation(gameId));
       } else if (result.message === 'Submission received, waiting for other participant') {
-        toast.success('Submission received. Waiting for other participant.');
+        toast.custom("wait. an ai will determine your performance");
         setLoading(false)
         router.push(NAVIGATION.Evaluation(gameId));
       } else {
@@ -299,7 +297,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
       }
     } catch (error) {
       setLoading(false)
-      toast.error('An error occurred while submitting the game. Please try again.');
+      toast.error('something. must have happened. wait for instructions.');
     }
   }, [gameId, user?.id, game.prompt, game.points])
 
@@ -313,7 +311,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
         if (prevTime <= 1) {
           clearInterval(timer);
           handleSubmission().catch(() => {
-            toast.error('Error when submitting')
+            toast.error('something. must have happened. wait for instructions.');
           })
           return 0;
         }
@@ -415,7 +413,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
         {joinState === 'joined' && (
           <div className="flex items-center space-x-2 bg-green-500 px-3 py-1 rounded-full">
             <UserPlus size={16}/>
-            <span>Player Joined!</span>
+            <span>cool. both online. play,</span>
           </div>
         )}
         <div className="flex items-center space-x-2">
@@ -436,7 +434,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
                 onClick={handleManualSubmission}
                 disabled={timeLeft === 0 || loading}
               >
-                {loading ? 'Submitting...' : 'Submit final code'}
+                {loading ? 'load...' : 'send your code'}
               </Button>
             </PopoverContent>
           </Popover>
@@ -452,7 +450,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
                 className="w-full"
                 onClick={handleExitGame}
               >
-                Exit -1 point
+                sure? exits cost.
               </Button>
             </PopoverContent>
           </Popover>
@@ -460,43 +458,15 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
       </div>
       <Alert className="my-5 bg-red-500">
         <Info className="h-4 w-4"/>
-        <AlertTitle>Game Instructions ({game.title})</AlertTitle>
+        <AlertTitle>({game.title})</AlertTitle>
         <AlertDescription>
-          Instructions: {game.prompt} <br/>
-          When you finish, click on the top right to submit or quit (penalty -1)
+          instruct: {game.prompt} <br/>
+          look on the top right you can submit or cancel.
         </AlertDescription>
       </Alert>
       <div className="flex flex-1 overflow-hidden">
         {/* Current User's Chat */}
         <div className="flex-1 p-4 relative">
-          <Popover
-            open={openPopovers[user.id]}
-            onOpenChange={(open) => setOpenPopovers(prev => ({...prev, [user.id]: open}))}
-          >
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute bg-green-700 top-8 right-8 rounded-full hover:animate-pulse hover:bg-black"
-              >
-                <ImageIcon className="h-4 text-white w-4"/>
-                <span className="sr-only">View output</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-2">
-                <h3 className="font-medium leading-none">Expected Result</h3>
-                <p className="text-sm text-muted-foreground">The output image or instructions you need to execute.</p>
-                <div className="aspect-square overflow-hidden rounded-md">
-                  <img
-                    src="https://rankbreeze.com/wp-content/uploads/2023/09/Insights-Main-Page.png"
-                    alt="Generated output"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
 
           <Card className="h-full flex flex-col">
             <CardHeader className="flex-shrink-0">
@@ -580,7 +550,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
                 />
                 <Button type="submit" size="icon">
                   <MessageSquare className="h-4 w-4"/>
-                  <span className="sr-only">Send</span>
+                  <span className="sr-only">send</span>
                 </Button>
               </form>
             </CardFooter>
@@ -606,7 +576,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
                       <AvatarFallback>Opp</AvatarFallback>
                     </Avatar>
                     <div className="bg-blue-200 text-blue-800 rounded-lg p-2">
-                      Opponent is talking to AI...
+                      <p>your opponent is sending messages, why wait? ...</p>
                     </div>
                   </div>
                 </div>
@@ -619,7 +589,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
                       <AvatarFallback>Opp</AvatarFallback>
                     </Avatar>
                     <div className="bg-blue-200 text-blue-800 rounded-lg p-2">
-                      Opponent is typing...<MessageCircle className="w-5 h-5 inline ml-1"/>
+                      typing...<MessageCircle className="w-5 h-5 inline ml-1"/>
                     </div>
                   </div>
                 </div>
@@ -627,7 +597,9 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
             </CardContent>
             <CardFooter>
               <div className="w-full bg-gray-100 rounded-md p-2 text-gray-500">
-                Opp input
+                {
+                  opponentPlayer?.isTyping ? 'typing...' : 'idle'
+                }
               </div>
             </CardFooter>
           </Card>

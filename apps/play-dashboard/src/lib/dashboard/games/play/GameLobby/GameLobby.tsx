@@ -24,27 +24,24 @@ export default function GameLobby() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
       <Alert className="mb-8 max-w-md">
         <Users className="h-4 w-4" />
-        <AlertTitle>Waiting for Opponent</AlertTitle>
+        <AlertTitle>wait</AlertTitle>
         <AlertDescription>
-          Please wait while we find an opponent for you. The game will start automatically once a player joins.
+          the game will start automatically once a player joins.
         </AlertDescription>
       </Alert>
 
       <Card className="w-[380px] text-center">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Game Lobby</CardTitle>
+          <CardTitle className="text-2xl font-bold">chill.</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center space-x-2">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-xl font-semibold">Waiting for opponent{dots}</p>
+            <p className="text-xl font-semibold"> looking{dots}</p>
           </div>
-          <p className="mt-4 text-muted-foreground">
-            Your game will begin as soon as another player joins. Get ready!
-          </p>
 
           <p className="mt-4 text-red-500">
-            Once the game starts you will not be able to quit, quitting could cost you -1 point
+            leaving the game cost: -1
           </p>
 
         </CardContent>

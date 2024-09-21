@@ -26,13 +26,13 @@ export function Games({user}: GamesProps) {
 
   return (
     <div className="min-h-screen bg-[#090d21] text-white p-8">
-      <h1 className="text-3xl mb-5">Welcome {user.username} You have: {user.totalPoints} points</h1>
+      <h1 className="text-3xl mb-5">{`{${user.username}}`}, {user.totalPoints} points <i>remaining</i></h1>
       <div className="flex justify-between items-center mb-8">
         {
           isLoading ? '' : <h1 className="text-2xl font-bold transition">{games.length} Game{games.length > 1 ? 's' : ''}</h1>
         }
         <Button className="bg-green-600 hover:bg-green-700" onClick={() => setIsPopupOpen(true)}>
-          <Plus className="mr-2 h-4 w-4"/> Create Game
+          create game
         </Button>
       </div>
       <main>
@@ -75,7 +75,7 @@ export function Games({user}: GamesProps) {
                       </CardHeader>
                       <CardContent className="p-4">
                         <div className="flex justify-between text-sm text-gray-400">
-                          <span>Status: {game.status} {game.status === GameStatus.WAITING ? 'Ready to play!' : ''}</span>
+                          <span>Status: {game.status} {game.status === GameStatus.WAITING ? 'battle here' : ''}</span>
                         </div>
 
                         <div className="flex mt-4 justify-between text-sm text-gray-400">
@@ -88,7 +88,7 @@ export function Games({user}: GamesProps) {
                           className="w-full rounded-none bg-green-600 hover:bg-white hover:text-black"
                           disabled={game.status !== GameStatus.WAITING || game.participants.length >= 2}
                         >
-                          Play
+                          play?
                         </Button>
                       </CardFooter>
                     </Card>
