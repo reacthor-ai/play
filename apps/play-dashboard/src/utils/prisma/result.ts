@@ -1,10 +1,12 @@
-export type SupabaseResult<T> = {
+import {PrismaErrorResponse} from "@/utils/prisma/error";
+
+export type PrismaCustomAPIResult<T> = {
   success: boolean;
   data?: T;
-  error?: string;
+  error?: PrismaErrorResponse;
 };
 
-export const createSupabaseResult = <T>(success: boolean, data?: T, error?: string): SupabaseResult<T> => ({
+export const createPrismaApiResult = <T>(success: boolean, data?: T, error?: PrismaErrorResponse): PrismaCustomAPIResult<T> => ({
   success,
   data,
   error

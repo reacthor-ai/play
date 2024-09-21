@@ -1,0 +1,22 @@
+{
+  "name": "@thor/db",
+  "version": "1.0.2",
+  "description": "",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "index.js",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push --skip-generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.19.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.1"
+  }
+}

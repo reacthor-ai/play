@@ -23,8 +23,7 @@ export async function POST(req: Request) {
         onboarding: onboarding ?? false,
       },
     })
-
-    return NextResponse.json({data: newUser}, {status: 201})
+    return NextResponse.json(newUser, {status: 201})
   } catch (error) {
     return NextResponse.json(handlePrismaError(error))
   }

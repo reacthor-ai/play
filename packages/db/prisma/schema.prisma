@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             String            @id @default(cuid())
+  username       String            @unique
+  email          String            @unique
+  supabaseId     String            @unique
+  country        String?
+  onboarding     Boolean           @default(false)
+  totalPoints    Int               @default(50)
+  currentRank    Int?
+  participations GameParticipant[]
+  createdGames   Game[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  games       Game[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Game {
+  id           String            @id @default(cuid())
+  prompt       String
+  startTime    DateTime          @default(now())
+  duration     Int
+  endTime      DateTime
+  status       GameStatus        @default(WAITING)
+  category     Category          @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  winnerId     String?
+  createdBy    User              @relation(fields: [createdById], references: [id])
+  createdById  String
+  participants GameParticipant[]
+  evaluations  Evaluation[]
+  maxPlayers   Int               @default(2)
+  roomCode     String            @unique
+  title        String
+  points       Int               @default(0)
+}
+
+model GameParticipant {
+  id             String      @id @default(cuid())
+  game           Game        @relation(fields: [gameId], references: [id])
+  gameId         String
+  user           User        @relation(fields: [userId], references: [id])
+  userId         String
+  submission     String?
+  submissionTime DateTime?
+  evaluation     Evaluation?
+  cursorX        Float?
+  cursorY        Float?
+  isTyping       Boolean     @default(false)
+  lastActivity   DateTime    @default(now())
+
+  @@unique([gameId, userId])
+}
+
+model Evaluation {
+  id            String          @id @default(cuid())
+  game          Game            @relation(fields: [gameId], references: [id])
+  gameId        String
+  participant   GameParticipant @relation(fields: [participantId], references: [id])
+  participantId String          @unique
+  score         Float // 0-100 scale
+  feedback      String?
+  timestamp     DateTime        @default(now())
+}
+
+model chat_history {
+  id         Int      @id @default(autoincrement())
+  session_id String
+  message    Json
+  timestamp  DateTime @default(now())
+  game_id    String?
+}
+
+enum GameStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}

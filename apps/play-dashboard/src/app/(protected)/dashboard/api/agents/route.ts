@@ -1,11 +1,9 @@
 import {NextRequest, NextResponse} from "next/server";
-import {createClient} from "@/utils/supabase/server";
-import {SupabaseVectorStore} from "@langchain/community/vectorstores/supabase";
 import {ChatAnthropic} from "@langchain/anthropic";
-import {OpenAIEmbeddings} from "@langchain/openai";
 import {executeReactTailwindAgent} from "@/agents/coding/execute";
-
-export const runtime = "edge";
+import {LangChainAdapter, StreamData} from 'ai';
+import {AIMessage, BaseMessage, HumanMessage} from "@langchain/core/messages";
+import {createClient} from "@/utils/supabase/server";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY!;
 
@@ -13,35 +11,60 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const userId = body.userId;
+    const gameId = body.gameId
 
     const chatModel = new ChatAnthropic({
       anthropicApiKey: ANTHROPIC_API_KEY,
       model: "claude-3-5-sonnet-20240620",
       temperature: 0.2,
+      streaming: true,
     });
 
-    const client = createClient();
-    const vectorstore = new SupabaseVectorStore(new OpenAIEmbeddings(), {
-      client,
-      tableName: "documents",
-      queryName: "match_documents",
-    });
+    const supabase = await createClient()
 
-    const chainWithHistory = await executeReactTailwindAgent(
-      vectorstore,
-      chatModel
-    )
+    const chainWithHistory = await executeReactTailwindAgent(chatModel);
+
+    let messages: BaseMessage[];
+    const currentTime = new Date().toISOString();
+
+    if ("messages" in body) {
+      messages = body.messages.map((msg: any) => {
+        const messageTime = msg.timestamp || currentTime;
+        return msg.role === 'user'
+          ? new HumanMessage({content: msg.content, additional_kwargs: {timestamp: messageTime}})
+          : new AIMessage({content: msg.content, additional_kwargs: {timestamp: messageTime}});
+      });
+    } else {
+      messages = [new HumanMessage({content: body.prompt, additional_kwargs: {timestamp: currentTime}})];
+    }
+
+    const data = new StreamData();
+
+    const lastMessage = messages[messages.length - 1];
 
     const stream = await chainWithHistory.stream(
       {
-        input: body.messages[body.messages.length - 1].content,
+        input: lastMessage.content as string,
+        current_time: currentTime,
       },
       {
         configurable: {sessionId: userId},
-      }
-    );
+      },
+    )
 
-    return new Response(stream);
+    return LangChainAdapter.toDataStreamResponse(stream, {
+      data,
+      callbacks: {
+        async onFinal() {
+          await supabase
+            .from('chat_history')
+            .update({ game_id: gameId })
+            .eq('session_id', userId)
+          await data.close();
+        },
+      },
+    });
+
   } catch (e: any) {
     return NextResponse.json({error: e.message}, {status: e.status ?? 500});
   }
