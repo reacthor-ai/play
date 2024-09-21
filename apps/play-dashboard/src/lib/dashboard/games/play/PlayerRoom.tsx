@@ -279,9 +279,9 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
           userId: user?.id,
           game: {
             prompt: game.prompt,
-            points: game.points
+            points: game.points,
+            createdById: game.createdById
           },
-          gameCreatorId: game.createdById
         }),
       });
 

@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
       gameId,
       userId,
       game,
-      gameCreatorId
     } = await req.json();
 
     const participantsResult = await fetchParticipants(gameId);
