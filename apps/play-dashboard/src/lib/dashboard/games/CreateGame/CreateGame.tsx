@@ -106,11 +106,11 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="prompt" className="text-white">Prompt</Label>
+              <Label htmlFor="prompt" className="text-white">task</Label>
               <Input
                 id="prompt"
                 className="bg-[#1c2333] border-gray-700 text-white placeholder-gray-400"
-                placeholder="Enter image (url) to replicate"
+                placeholder="your task"
                 value={gameConfig.prompt}
                 onChange={(e) => setGameConfig({...gameConfig, prompt: e.target.value})}
                 required

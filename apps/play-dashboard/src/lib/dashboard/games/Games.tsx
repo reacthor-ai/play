@@ -1,17 +1,18 @@
 'use client'
 
 import {useState} from 'react'
-import {Plus, X} from 'lucide-react'
+import {X} from 'lucide-react'
 import {Button} from "@/components/ui/button"
 import {CreateGame} from "@/lib/dashboard/games/CreateGame";
 import {useRouter} from "next/navigation";
 import {NAVIGATION} from "@/utils/navigation/routes";
-import {User ,GameStatus} from '@thor/db'
+import {GameStatus, User} from '@thor/db'
 import {useGetCategoryQuery} from "@/store/category/get";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Skeleton} from "@/components/ui/skeleton";
 
 import {useGetGameQuery} from "@/store/game/get";
+import {Onlinethoreans} from "@/lib/dashboard/games/Onlinethoreans/Onlinethoreans";
 
 type GamesProps = {
   user: User
@@ -26,13 +27,19 @@ export function Games({user}: GamesProps) {
 
   return (
     <div className="min-h-screen bg-[#090d21] text-white p-8">
+      {user && <Onlinethoreans user={user}/>}
       <h1 className="text-3xl mb-5">{`{${user.username}}`}, {user.totalPoints} points <i>remaining</i></h1>
       <div className="flex justify-between items-center mb-8">
         {
-          isLoading ? '' : <h1 className="text-2xl font-bold transition">{games.length} Game{games.length > 1 ? 's' : ''}</h1>
+          isLoading ? '' :
+            (
+              <div>
+                <h1 className="text-2xl font-bold transition">{games.length} Game{games.length > 1 ? 's' : ''}</h1>
+              </div>
+            )
         }
         <Button className="bg-green-600 hover:bg-green-700" onClick={() => setIsPopupOpen(true)}>
-          create game
+          create game?
         </Button>
       </div>
       <main>
@@ -71,15 +78,16 @@ export function Games({user}: GamesProps) {
                       )}
                       <CardHeader className="p-4">
                         <CardTitle className="font-bold text-xl text-white mb-2">{game.title}</CardTitle>
-                        <CardDescription className="mb-2 text-gray-300 text-sm">{!game.prompt.includes('http') && game.prompt}</CardDescription>
+                        <CardDescription
+                          className="mb-2 text-gray-300 text-sm">{!game.prompt.includes('http') && game.prompt}</CardDescription>
                       </CardHeader>
                       <CardContent className="p-4">
                         <div className="flex justify-between text-sm text-gray-400">
-                          <span>Status: {game.status} {game.status === GameStatus.WAITING ? 'battle here' : ''}</span>
+                          <span>status: {game.status} {game.status === GameStatus.WAITING ? 'battle here' : ''}</span>
                         </div>
 
                         <div className="flex mt-4 justify-between text-sm text-gray-400">
-                          <span>Category: {game?.category?.name}</span>
+                          <span>category: {game?.category?.name}</span>
                         </div>
                       </CardContent>
                       <CardFooter>

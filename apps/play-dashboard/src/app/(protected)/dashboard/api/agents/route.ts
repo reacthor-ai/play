@@ -3,7 +3,7 @@ import {ChatAnthropic} from "@langchain/anthropic";
 import {executeReactTailwindAgent} from "@/agents/coding/execute";
 import {LangChainAdapter, StreamData} from 'ai';
 import {AIMessage, BaseMessage, HumanMessage} from "@langchain/core/messages";
-import {createClient} from "@/utils/supabase/server";
+import {updateChatHistoryWithGameId} from "@/api/internal/messages";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY!;
 
@@ -19,8 +19,6 @@ export async function POST(req: NextRequest) {
       temperature: 0.2,
       streaming: true,
     });
-
-    const supabase = await createClient()
 
     const chainWithHistory = await executeReactTailwindAgent(chatModel);
 
@@ -56,10 +54,7 @@ export async function POST(req: NextRequest) {
       data,
       callbacks: {
         async onFinal() {
-          await supabase
-            .from('chat_history')
-            .update({ game_id: gameId })
-            .eq('session_id', userId)
+          await updateChatHistoryWithGameId(userId, gameId)
           await data.close();
         },
       },

@@ -29,17 +29,9 @@ export async function DashboardCustomLayout({children}: Readonly<{ children: Rea
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link href="/" className="flex-shrink-0">
-                <Image
-                  alt="reacthor-logo"
-                  height={40}
-                  className="block m-auto cursor-pointer"
-                  width={40}
-                  style={{
-                    aspectRatio: '100/100',
-                    objectFit: 'cover'
-                  }}
-                  src={reacthorSvg}
-                />
+                <h1 className="text-lg font-bold leading-tight">
+                  reac<i>thor</i>.
+                </h1>
               </Link>
               <div className="hidden md:block ml-10">
                 <div className="flex items-baseline space-x-4">

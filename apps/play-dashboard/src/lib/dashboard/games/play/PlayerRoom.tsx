@@ -450,7 +450,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
                 className="w-full"
                 onClick={handleExitGame}
               >
-                sure? exits cost.
+                sure? exit will cost you.
               </Button>
             </PopoverContent>
           </Popover>

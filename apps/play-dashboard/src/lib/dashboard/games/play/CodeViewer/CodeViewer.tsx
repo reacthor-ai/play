@@ -2,7 +2,7 @@ import React, {memo} from 'react';
 import {SandpackLayout, SandpackPreview, SandpackProvider} from "@codesandbox/sandpack-react";
 
 export type CodeViewerProps = {
-  isLoading: boolean;
+  isLoading?: boolean;
   code: string;
   explanation?: string;
 }

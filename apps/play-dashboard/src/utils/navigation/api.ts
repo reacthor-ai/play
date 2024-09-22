@@ -8,7 +8,8 @@ export const API_ROUTES = {
   },
   game: {
     create: '/dashboard/api/create-game',
-    get: '/dashboard/api/get-games'
+    get: '/dashboard/api/get-games',
+    delete: '/dashboard/api/delete-game',
   },
   gameParticipant: {
     create: '/dashboard/api/create-participants',
