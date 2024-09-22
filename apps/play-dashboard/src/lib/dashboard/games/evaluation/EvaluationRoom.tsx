@@ -1,5 +1,4 @@
-import {Evaluation, User} from '@thor/db'
-import {GameWithCategoryAndParticipants} from "@/store/game/get";
+import {User} from '@thor/db'
 import {
   findWinnerAndLoser,
   GameWithCategoryAndParticipantsAndEvaluations
@@ -67,7 +66,7 @@ export const EvaluationRoom = async (props: EvaluationRoomProps) => {
           </Card>
 
           <span className='text-white'>play another{" "}
-          <Link href={NAVIGATION.Dashboard.Games}><i className='text-red-800'>game?</i></Link>
+            <Link href={NAVIGATION.Dashboard.Games}><i className='text-red-800'>game?</i></Link>
           </span>
         </div>
       </div>

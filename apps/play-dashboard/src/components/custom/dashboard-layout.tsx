@@ -1,6 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
-import reacthorSvg from "../../../public/reacthor.svg";
 import {Separator} from "@/components/ui/separator";
 import {NAVIGATION} from "@/utils/navigation/routes";
 

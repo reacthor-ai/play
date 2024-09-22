@@ -20,11 +20,11 @@ export const fetchParticipants = async (gameId: string): Promise<PrismaCustomAPI
 export const fetchParticipant = async (participantId: string): Promise<PrismaCustomAPIResult<PickGameParticipants>> => {
   try {
     const participant = await prisma.gameParticipant.findUnique({
-      where: { id: participantId },
-      select: { id: true, userId: true, gameId: true, submission: true }
+      where: {id: participantId},
+      select: {id: true, userId: true, gameId: true, submission: true}
     });
     if (!participant) {
-      return createPrismaApiResult(false, undefined, { error: 'Participant not found', status: 404 });
+      return createPrismaApiResult(false, undefined, {error: 'Participant not found', status: 404});
     }
     return createPrismaApiResult(true, participant);
   } catch (error) {
