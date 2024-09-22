@@ -13,24 +13,6 @@ import {handlePrismaError} from "@/utils/prisma/error";
 import {prisma} from "@/utils/prisma/client";
 import {updateCreatorPoints, updateUserWinnerPoints} from "@/api/internal/user";
 
-async function getParticipantSubmission(participant: PickGameParticipants, userId: string) {
-  if (participant.submission || participant.userId !== userId) {
-    return participant;
-  }
-
-  const lastMessageResult = await fetchLastMessage(participant.userId, participant.gameId);
-  if (!lastMessageResult.success) {
-    throw new Error(`Failed to fetch last message: ${lastMessageResult.error}`);
-  }
-
-  const updateResult = await updateParticipantSubmission(participant.id, lastMessageResult.data!);
-  if (!updateResult.success) {
-    throw new Error(`Failed to update participant submission: ${updateResult.error}`);
-  }
-
-  return { ...participant, submission: lastMessageResult.data };
-}
-
 export async function POST(req: NextRequest) {
   try {
     const {

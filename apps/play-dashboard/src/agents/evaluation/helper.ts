@@ -2,7 +2,7 @@ import {ChatAnthropic} from "@langchain/anthropic";
 import {executeCodeEvaluationAgent} from "@/agents/evaluation/execute";
 import {PickGameParticipants} from "@/api/internal/participant";
 
-export const evaluateSubmissions = async (submissions: PickGameParticipants[], instructions) => {
+export const evaluateSubmissions = async (submissions: PickGameParticipants[], instructions: string) => {
   const chatModel = new ChatAnthropic({
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     model: "claude-3-opus-20240229",
