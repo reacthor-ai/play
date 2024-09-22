@@ -5,7 +5,7 @@ import {createPrismaApiResult, type PrismaCustomAPIResult} from "@/utils/prisma/
 
 export type PickGameParticipants = Pick<GameParticipant, 'id' | 'userId' | 'gameId' | 'submission'>
 
-export const fetchParticipants = async (gameId: string): Promise<PrismaCustomAPIResult<PickGameParticipants[]>> => {
+export const fetchParticipants = async (gameId: string): Promise<PrismaCustomAPIResult<PickGameParticipants[] | undefined>> => {
   try {
     const participants = await prisma.gameParticipant.findMany({
       where: {gameId},
@@ -17,7 +17,7 @@ export const fetchParticipants = async (gameId: string): Promise<PrismaCustomAPI
   }
 };
 
-export const fetchParticipant = async (participantId: string): Promise<PrismaCustomAPIResult<PickGameParticipants>> => {
+export const fetchParticipant = async (participantId: string): Promise<PrismaCustomAPIResult<PickGameParticipants | undefined>> => {
   try {
     const participant = await prisma.gameParticipant.findUnique({
       where: {id: participantId},

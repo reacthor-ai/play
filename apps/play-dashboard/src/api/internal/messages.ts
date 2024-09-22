@@ -29,7 +29,7 @@ export const getMessages = async (
   return data
 }
 
-export const fetchLastMessage = async (userId: string, gameId: string): Promise<PrismaCustomAPIResult<string>> => {
+export const fetchLastMessage = async (userId: string, gameId: string): Promise<PrismaCustomAPIResult<string | undefined>> => {
   try {
     const lastMessage = await prisma.chat_history.findFirst({
       where: {session_id: userId, game_id: gameId},
@@ -44,29 +44,3 @@ export const fetchLastMessage = async (userId: string, gameId: string): Promise<
     return createPrismaApiResult(false, undefined, handlePrismaError(error));
   }
 };
-
-export async function updateChatHistoryWithGameId(userId: string, gameId: string): Promise<PrismaCustomAPIResult<void>> {
-  try {
-    const existingRecord = await prisma.chat_history.findFirst({
-      where: {
-        session_id: userId
-      }
-    });
-
-    if (existingRecord) {
-      await prisma.chat_history.update({
-        where: {
-          id: existingRecord.id
-        },
-        data: {
-          game_id: gameId
-        }
-      });
-      return createPrismaApiResult(true);
-    }
-  } catch (error) {
-    return createPrismaApiResult(false, undefined, handlePrismaError(error));
-  } finally {
-    await prisma.$disconnect();
-  }
-}

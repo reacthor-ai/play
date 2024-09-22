@@ -13,8 +13,8 @@ export async function GET(request: Request) {
   }
 
   if (redirectTo) {
-    return NextResponse.redirect(`${origin}${redirectTo}/dashboard`);
+    return NextResponse.redirect(`${origin}${redirectTo}/dashboard/games`);
   }
 
-  return NextResponse.redirect(`${origin}/dashboard`);
+  return NextResponse.redirect(`${origin}/dashboard/games`);
 }

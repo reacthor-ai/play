@@ -1,9 +1,10 @@
-import {PlayerRoom} from "@/lib/dashboard/games/play";
 import {prisma} from "@/utils/prisma/client";
 import {notFound} from "next/navigation";
-import type {GameWithCategoryAndParticipants} from "@/store/game/get";
+import {getUser} from "@/api/internal/user";
+import {GameStatus} from "@thor/db";
+import {PlayerRoom} from "@/lib/dashboard/games/play";
 
-export default async function DashboardPlayerRoomPage(props) {
+export default async function DashboardPlayerRoomPage(props: any) {
   const gameId = props.params.gameId
 
   if (!gameId) {
@@ -18,11 +19,17 @@ export default async function DashboardPlayerRoomPage(props) {
     },
   })
 
-  if (!game) {
+  const user = await getUser()
+
+  if (!game || !user) {
+    notFound()
+  }
+
+  if (game.participants.length === 2 || game.status === GameStatus.COMPLETED) {
     notFound()
   }
 
   return (
-    <PlayerRoom game={game as unknown as GameWithCategoryAndParticipants}/>
+    <PlayerRoom user={user} game={game}/>
   )
 }

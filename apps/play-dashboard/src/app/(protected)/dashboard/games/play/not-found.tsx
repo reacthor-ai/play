@@ -16,12 +16,12 @@ export default function NotFound() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-xl font-semibold">Page Not Found</p>
-          <p className="mt-2 text-muted-foreground">We could not find the page your looking for.</p>
+          <p className="text-xl font-semibold">not found</p>
+          <p className="mt-2 text-muted-foreground">theres a game going on... or an issue, either way go back.</p>
         </CardContent>
         <CardFooter className="flex justify-center">
           <Button asChild>
-            <Link href={NAVIGATION.Dashboard.Games}>Return to Games List</Link>
+            <Link href={NAVIGATION.Dashboard.Games}>games List</Link>
           </Button>
         </CardFooter>
       </Card>

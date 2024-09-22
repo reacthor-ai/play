@@ -2,8 +2,9 @@ import {prisma} from "@/utils/prisma/client";
 import {notFound} from "next/navigation";
 import {EvaluationRoom} from "@/lib/dashboard/games/evaluation";
 import {getUser} from "@/api/internal/user";
+import {NextPageProps} from "@/app/(protected)/types";
 
-export default async function DashboardEvaluationPage(props) {
+export default async function DashboardEvaluationPage(props: NextPageProps<{ evaluationId: string }>) {
   const gameId = props.params.evaluationId
 
   if (!gameId) {
@@ -21,9 +22,12 @@ export default async function DashboardEvaluationPage(props) {
 
   const currentUser = await getUser()
 
-  const isParticipantWaiting = game.participants.length === 1
+  if (!game || !currentUser) {
+    notFound()
+  }
 
-  if (!game || isParticipantWaiting) {
+  const checkEvaluation = game.evaluations.length <= 1
+  if (checkEvaluation) {
     notFound()
   }
 

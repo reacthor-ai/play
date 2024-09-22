@@ -7,7 +7,7 @@ export type GameWithCategoryAndParticipantsAndEvaluations =
 export const findWinnerAndLoser = (game: GameWithCategoryAndParticipantsAndEvaluations, currentUserId: string) => {
   const sortedEvaluations = [...game.evaluations].sort((a, b) => b.score - a.score);
 
-  const createParticipantInfo = (evaluation, index) => {
+  const createParticipantInfo = (evaluation: Evaluation, index: number) => {
     const participant = game.participants[index];
     return {
       evaluation: evaluation,

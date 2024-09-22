@@ -1,6 +1,6 @@
 {
   "name": "@thor/db",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "exports": {
     ".": "./src/index.ts"

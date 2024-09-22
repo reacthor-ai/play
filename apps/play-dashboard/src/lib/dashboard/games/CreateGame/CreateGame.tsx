@@ -19,6 +19,7 @@ interface GameCreatorFormProps {
 }
 
 const MAX_POINTS = 10;
+const MIN_PLAYERS = 2
 
 export function CreateGame({onClose, userId, existingCategories}: GameCreatorFormProps) {
   const [gameConfig, setGameConfig] = useState<Omit<CreateGameParams, 'categoryId' | 'createdById' | 'name' | 'description' | 'existingCategoryId'>>({
@@ -74,16 +75,29 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
     setGameConfig({...gameConfig, duration: parseInt(value, 10)})
   }
 
-  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'maxPlayers' | 'points') => {
-    const value = e.target.value
-    if (value === '' || /^\d+$/.test(value)) {
-      let numValue = parseInt(value, 10)
+  const handleNumberChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: 'maxPlayers' | 'points'
+  ) => {
+    const value = e.target.value;
+
+    if (value === '' || /^-*\d+$/.test(value)) {
+      const minusCount = (value.match(/-/g) || []).length;
+      let numValue = parseInt(value.replace(/-/g, ''), 10);
+      numValue = minusCount % 2 === 1 ? -numValue : numValue;
+
       if (field === 'points') {
-        numValue = Math.min(numValue, MAX_POINTS)  // Limit points to MAX_POINTS
+        numValue = Math.min(Math.max(numValue, 0), MAX_POINTS);
+      } else if (field === 'maxPlayers') {
+        numValue = Math.max(numValue, MIN_PLAYERS);
       }
-      setGameConfig({...gameConfig, [field]: value === '' ? undefined : numValue})
+
+      setGameConfig((prevConfig) => ({
+        ...prevConfig,
+        [field]: value === '' ? undefined : numValue
+      }));
     }
-  }
+  };
 
   const isDisabled = () => {
     return (
@@ -110,7 +124,7 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
               <Input
                 id="prompt"
                 className="bg-[#1c2333] border-gray-700 text-white placeholder-gray-400"
-                placeholder="your task"
+                placeholder="your task. example: create the airbnb dashboard"
                 value={gameConfig.prompt}
                 onChange={(e) => setGameConfig({...gameConfig, prompt: e.target.value})}
                 required
@@ -126,6 +140,8 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
                 value={gameConfig.points}
                 onChange={(e) => handleNumberChange(e, 'points')}
                 required
+                inputMode='numeric'
+                pattern="-?[0-9]*"
                 max={MAX_POINTS}
               />
             </div>
@@ -201,7 +217,7 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
             )}
           </div>
           {formError && <p className="text-red-500">{formError}</p>}
-          {error && <p className="text-red-500">{error as string}</p>}
+          {(error as any) && <p className="text-red-500">{error as string}</p>}
           <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isPending || isDisabled()}>
             {isPending ? 'Creating...' : 'Submit'}
           </Button>

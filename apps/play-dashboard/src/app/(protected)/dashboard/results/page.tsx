@@ -11,7 +11,7 @@ export default async function DashboardResults() {
 
   const games = await prisma.game.findMany({
     where: {
-      createdById: user.id
+      createdById: user?.id
     },
     include: {
       category: true,

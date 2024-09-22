@@ -28,13 +28,15 @@ export function Games({user}: GamesProps) {
   return (
     <div className="min-h-screen bg-[#090d21] text-white p-8">
       {user && <Onlinethoreans user={user}/>}
-      <h1 className="text-3xl mb-5">{`{${user.username}}`}, {user.totalPoints} points <i>remaining</i></h1>
+      <h1 className="text-3xl mb-5">{`{${user.username}}`}, {user.totalPoints} points <i className='line-through'>remaining</i> <i>for now</i></h1>
       <div className="flex justify-between items-center mb-8">
         {
           isLoading ? '' :
             (
               <div>
-                <h1 className="text-2xl font-bold transition">{games.length} Game{games.length > 1 ? 's' : ''}</h1>
+                {
+                  games && <h1 className="text-2xl font-bold transition">{games.length} Game{games.length > 1 ? 's' : ''}</h1>
+                }
               </div>
             )
         }
@@ -96,7 +98,7 @@ export function Games({user}: GamesProps) {
                           className="w-full rounded-none bg-green-600 hover:bg-white hover:text-black"
                           disabled={game.status !== GameStatus.WAITING || game.participants.length >= 2}
                         >
-                          play?
+                          {game.status !== GameStatus.WAITING ? 'done' : 'play ?'}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -117,7 +119,7 @@ export function Games({user}: GamesProps) {
                 <X className="h-6 w-6"/>
               </Button>
             </div>
-            <CreateGame existingCategories={existingCategories} userId={user.id} onClose={setIsPopupOpen}/>
+            <CreateGame existingCategories={existingCategories as any} userId={user.id} onClose={setIsPopupOpen}/>
           </div>
         </div>
 

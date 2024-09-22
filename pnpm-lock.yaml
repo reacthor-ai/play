@@ -38,6 +38,9 @@ importers:
       '@langchain/openai':
         specifier: ^0.3.0
         version: 0.3.0(@langchain/core@0.3.1)
+      '@radix-ui/react-alert-dialog':
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1)(react@18.3.1)
       '@radix-ui/react-avatar':
         specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1)(react@18.3.1)
@@ -96,14 +99,14 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       jotai:
-        specifier: ^2.6.5
-        version: 2.9.3(@types/react@18.3.5)(react@18.3.1)
+        specifier: ^2.10.0
+        version: 2.10.0(@types/react@18.3.5)(react@18.3.1)
       jotai-immer:
         specifier: ^0.4.1
-        version: 0.4.1(immer@10.1.1)(jotai@2.9.3)
+        version: 0.4.1(immer@10.1.1)(jotai@2.10.0)
       jotai-tanstack-query:
         specifier: ^0.8.8
-        version: 0.8.8(@tanstack/query-core@5.56.2)(jotai@2.9.3)
+        version: 0.8.8(@tanstack/query-core@5.56.2)(jotai@2.10.0)
       langchain:
         specifier: ^0.3.2
         version: 0.3.2(@langchain/anthropic@0.3.1)(@langchain/core@0.3.1)
@@ -1561,6 +1564,31 @@ packages:
 
   /@radix-ui/primitive@1.1.0:
     resolution: {integrity: sha512-4Z8dn6Upk0qk4P74xBhZ6Hd/w0mPEzOOLxy4xiPXOXqjF7jZS0VAKk7/x/H6FyY2zCkYJqePf1G5KmkmNJ4RBA==}
+    dev: false
+
+  /@radix-ui/react-alert-dialog@1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-wmCoJwj7byuVuiLKqDLlX7ClSUU0vd9sdCeM+2Ls+uf13+cpSJoMgwysHq1SGVVkJj5Xn0XWi1NoRCdkMpr6Mw==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@radix-ui/primitive': 1.1.0
+      '@radix-ui/react-compose-refs': 1.1.0(@types/react@18.3.5)(react@18.3.1)
+      '@radix-ui/react-context': 1.1.0(@types/react@18.3.5)(react@18.3.1)
+      '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-primitive': 2.0.0(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1)(react@18.3.1)
+      '@radix-ui/react-slot': 1.1.0(@types/react@18.3.5)(react@18.3.1)
+      '@types/react': 18.3.5
+      '@types/react-dom': 18.3.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /@radix-ui/react-arrow@1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.5)(react-dom@18.3.1)(react@18.3.1):
@@ -5754,28 +5782,28 @@ packages:
     resolution: {integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==}
     dev: false
 
-  /jotai-immer@0.4.1(immer@10.1.1)(jotai@2.9.3):
+  /jotai-immer@0.4.1(immer@10.1.1)(jotai@2.10.0):
     resolution: {integrity: sha512-nQTt1HBKie/5OJDck1qLpV1PeBA6bjJLAczEYAx70PD8R4Mbu7gtexfBUCzJh6W6ecsOfwHksAYAesVth6SN9A==}
     peerDependencies:
       immer: '>=9.0.0'
       jotai: '>=2.0.0'
     dependencies:
       immer: 10.1.1
-      jotai: 2.9.3(@types/react@18.3.5)(react@18.3.1)
+      jotai: 2.10.0(@types/react@18.3.5)(react@18.3.1)
     dev: false
 
-  /jotai-tanstack-query@0.8.8(@tanstack/query-core@5.56.2)(jotai@2.9.3):
+  /jotai-tanstack-query@0.8.8(@tanstack/query-core@5.56.2)(jotai@2.10.0):
     resolution: {integrity: sha512-sWLnfE78Ltz5dCjSe0pujLgwNWudD5xwszowVuMILLue/AMmExuVcD3oF60mHLvE9uueTbvdqjkoea1NN8U/7w==}
     peerDependencies:
       '@tanstack/query-core': '*'
       jotai: '>=2.0.0'
     dependencies:
       '@tanstack/query-core': 5.56.2
-      jotai: 2.9.3(@types/react@18.3.5)(react@18.3.1)
+      jotai: 2.10.0(@types/react@18.3.5)(react@18.3.1)
     dev: false
 
-  /jotai@2.9.3(@types/react@18.3.5)(react@18.3.1):
-    resolution: {integrity: sha512-IqMWKoXuEzWSShjd9UhalNsRGbdju5G2FrqNLQJT+Ih6p41VNYe2sav5hnwQx4HJr25jq9wRqvGSWGviGG6Gjw==}
+  /jotai@2.10.0(@types/react@18.3.5)(react@18.3.1):
+    resolution: {integrity: sha512-8W4u0aRlOIwGlLQ0sqfl/c6+eExl5D8lZgAUolirZLktyaj4WnxO/8a0HEPmtriQAB6X5LMhXzZVmw02X0P0qQ==}
     engines: {node: '>=12.20.0'}
     peerDependencies:
       '@types/react': '>=17.0.0'

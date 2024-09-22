@@ -28,7 +28,7 @@ export function GameResultCards({games}: GameResult) {
 
   return (
     <div className="flex mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {games.map((game) => {
           return (
             <Dialog key={game.id} open={openDialog === game.id}
@@ -60,7 +60,7 @@ export function GameResultCards({games}: GameResult) {
                       {gamesWithParticipants.participants.length >= 1 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {gamesWithParticipants.participants.map((participant, index) => {
-                            const result = extractCodeAndExplanation(JSON.parse(participant.submission)?.content);
+                            const result = extractCodeAndExplanation(JSON.parse(participant.submission as string).content);
                             const isWinner = gamesWithParticipants.winnerId === participant.userId
                             const evaluation = game.evaluations.find(d =>d.participantId === participant.id)
                             return (

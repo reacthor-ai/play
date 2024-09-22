@@ -13,6 +13,24 @@ import {handlePrismaError} from "@/utils/prisma/error";
 import {prisma} from "@/utils/prisma/client";
 import {updateCreatorPoints, updateUserWinnerPoints} from "@/api/internal/user";
 
+async function getParticipantSubmission(participant: PickGameParticipants, userId: string) {
+  if (participant.submission || participant.userId !== userId) {
+    return participant;
+  }
+
+  const lastMessageResult = await fetchLastMessage(participant.userId, participant.gameId);
+  if (!lastMessageResult.success) {
+    throw new Error(`Failed to fetch last message: ${lastMessageResult.error}`);
+  }
+
+  const updateResult = await updateParticipantSubmission(participant.id, lastMessageResult.data!);
+  if (!updateResult.success) {
+    throw new Error(`Failed to update participant submission: ${updateResult.error}`);
+  }
+
+  return { ...participant, submission: lastMessageResult.data };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -23,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     const participantsResult = await fetchParticipants(gameId);
     if (!participantsResult.success) {
-      return NextResponse.json({error: participantsResult.error.error}, {status: participantsResult.error.status});
+      return NextResponse.json({error: (participantsResult as any).error.error}, {status: (participantsResult as any).error.status});
     }
 
     const allParticipants = participantsResult.data!;
@@ -49,14 +67,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({error: failedParticipant.error!.error}, {status: failedParticipant.error!.status});
     }
 
-    const allSubmitted = participantsWithSubmissions.every(p => p.data.submission);
+    const allSubmitted = participantsWithSubmissions.every(p => (p as any).data.submission);
     if (!allSubmitted) {
       return NextResponse.json({
         message: 'Submission received, waiting for other participant',
       });
     }
 
-    const evaluationResult = await evaluateSubmissions(participantsWithSubmissions.map(r => r.data!), game.prompt);
+    const evaluationResult = await evaluateSubmissions((participantsWithSubmissions as unknown as any).map((r: any) => r.data!), game.prompt);
 
     // Determine the winner
     const winnerIndex = evaluationResult.evaluations.reduce((maxIndex, evals, currentIndex, array) =>

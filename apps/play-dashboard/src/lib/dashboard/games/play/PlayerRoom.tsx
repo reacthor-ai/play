@@ -11,7 +11,7 @@ import {CircleX, Clock, Info, MessageCircle, MessageSquare, PenToolIcon, UserPlu
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import {createClient} from "@/utils/supabase/client"
 import {toast, Toaster} from 'react-hot-toast'
-import {useGetUserQuery} from "@/store/user/get"
+import {User} from "@thor/db";
 import {NAVIGATION} from "@/utils/navigation/routes"
 import {getMessages} from "@/api/internal/messages";
 import {extractCodeAndExplanation} from "@/utils/extractCodeAndExplanation";
@@ -22,6 +22,7 @@ import {GameWithCategoryAndParticipants} from "@/store/game/get";
 import GameLobby from "@/lib/dashboard/games/play/GameLobby/GameLobby";
 import {useCreateGameParticipantAtom} from "@/store/gamePartcipants/create";
 import {API_ROUTES} from "@/utils/navigation/api";
+import {LeavePagePopup} from "@/lib/dashboard/games/play/LeavePagePopup/LeavePagePopup";
 
 type Message = {
   text: string;
@@ -41,8 +42,9 @@ type PlayerData = {
   lastActivity: Date;
 }
 
-export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = memo(({game}: {
-  game: GameWithCategoryAndParticipants
+export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants, user: User }> = memo(({game, user}: {
+  game: GameWithCategoryAndParticipants,
+  user: User
 }) => {
   const router = useRouter()
   const gameId = game.id
@@ -50,14 +52,13 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
   const [messages1, setMessages1] = useState<Message[]>([])
   const [messages2, setMessages2] = useState<Message[]>([])
   const [timeLeft, setTimeLeft] = useState<number>(game.duration * 60)
+  const [joinState, setJoinState] = useState<'joining' | 'joined' | 'ready'>('joining');
   const [opponentStatus, setOpponentStatus] = useState<PlayerStatus>('offline')
   const [players, setPlayers] = useState<PlayerData[]>([])
-  const [joinState, setJoinState] = useState<'joining' | 'joined' | 'ready'>('joining');
   const chatRef1 = useRef<HTMLDivElement>(null)
   const chatRef2 = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(false)
 
-  const user = useGetUserQuery()
   const [{
     mutate: createGameParticipant
   }] = useCreateGameParticipantAtom()
@@ -396,7 +397,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
   const opponentPlayer = players.find(p => p.userId !== user?.id);
 
   if (!user) {
-    return <>Loading... waiting for user data to come in.</>
+    return <GameLobby/>
   }
 
   if (joinState !== 'joined') {
@@ -404,6 +405,17 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants }> = m
   }
   return (
     <div className="flex flex-col h-screen" onMouseMove={(e) => updateCursorPosition(e.clientX, e.clientY)}>
+      <LeavePagePopup
+        game={game}
+        winner={{
+          id: user.id,
+          points: game.points
+        }}
+        quitter={{
+          id: opponentPlayer?.id ?? user.id,
+          points: game.points
+        }}
+      />
       <Toaster/>
       <div className="bg-zinc-900 text-white p-2 flex items-center justify-between rounded-full mx-4 my-2 shadow-lg">
         <div className="flex items-center space-x-2">
