@@ -57,23 +57,5 @@ export const updateParticipantEvaluation = async (participantId: string, points:
   }
 };
 
-export const getParticipantWithUser = async (gameId: string) => {
-  try {
-    const game = await prisma.game.findUnique({
-      where: {id: gameId},
-      include: {
-        category: true,
-        participants: true
-      },
-    })
-
-    const evaluations = await prisma.evaluation.findMany({
-      where: {gameId: gameId}
-    })
-  } catch (error) {
-
-  }
-}
-
 
 
