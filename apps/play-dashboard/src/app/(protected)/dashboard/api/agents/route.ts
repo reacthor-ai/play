@@ -2,7 +2,6 @@ import {NextRequest, NextResponse} from "next/server";
 import {ChatAnthropic} from "@langchain/anthropic";
 import {executeReactTailwindAgent} from "@/agents/coding/execute";
 import {LangChainAdapter, StreamData} from 'ai';
-import {AIMessage, BaseMessage, HumanMessage} from "@langchain/core/messages";
 import {createClient} from "@/utils/supabase/server";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY!;
@@ -23,27 +22,13 @@ export async function POST(req: NextRequest) {
 
     const chainWithHistory = await executeReactTailwindAgent(chatModel);
 
-    let messages: BaseMessage[];
     const currentTime = new Date().toISOString();
-
-    if ("messages" in body) {
-      messages = body.messages.map((msg: any) => {
-        const messageTime = msg.timestamp || currentTime;
-        return msg.role === 'user'
-          ? new HumanMessage({content: msg.content, additional_kwargs: {timestamp: messageTime}})
-          : new AIMessage({content: msg.content, additional_kwargs: {timestamp: messageTime}});
-      });
-    } else {
-      messages = [new HumanMessage({content: body.prompt, additional_kwargs: {timestamp: currentTime}})];
-    }
 
     const data = new StreamData();
 
-    const lastMessage = messages[messages.length - 1];
-
     const stream = await chainWithHistory.stream(
       {
-        input: lastMessage.content as string,
+        input: body.prompt,
         current_time: currentTime,
       },
       {
@@ -55,11 +40,18 @@ export async function POST(req: NextRequest) {
       data,
       callbacks: {
         async onFinal() {
-          await supabase
-            .from('chat_history')
-            .update({game_id: gameId})
-            .eq('session_id', userId)
-          await data.close();
+
+          try {
+            const updateHistory = supabase
+              .from('chat_history')
+              .update({game_id: gameId})
+              .eq('session_id', userId)
+            const closeData = data.close();
+
+            await Promise.all([updateHistory, closeData])
+          } catch (error) {
+            console.log(`Error_saving_messages: `, error)
+          }
         },
       },
     });

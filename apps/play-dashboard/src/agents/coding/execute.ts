@@ -54,7 +54,7 @@ class AnthropicToolUseParser extends BaseOutputParser<any> {
   lc_namespace: string[] = ["generate_react_code_error"];
 
   async parse(message: string): Promise<any> {
-    if (message && typeof message === 'string') {
+    if (message) {
       const messages = JSON.parse(message) as ParseMessage
       const tools = messages.find((m) => m.type === 'tool_use')
       const textMessage = messages.find((m) => m.type === 'text')
