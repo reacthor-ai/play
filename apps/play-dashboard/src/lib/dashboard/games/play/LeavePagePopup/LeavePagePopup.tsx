@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,10 +9,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
-import {GameWithCategoryAndParticipants} from "@/store/game/get";
-import {useUpdateUserPointsAtom} from "@/store/user/update-points";
-import {useRouter} from "next/navigation";
-import {NAVIGATION} from "@/utils/navigation/routes";
+import { GameWithCategoryAndParticipants } from "@/store/game/get";
+import { useUpdateUserPointsAtom } from "@/store/user/update-points";
+import { useRouter } from "next/navigation";
+import { NAVIGATION } from "@/utils/navigation/routes";
 
 type LeavePagePopupParams = {
   game: GameWithCategoryAndParticipants
@@ -26,33 +26,40 @@ type LeavePagePopupParams = {
   }
 }
 
-export const LeavePagePopup = ({game, winner, quitter}: LeavePagePopupParams) => {
+export const LeavePagePopup = ({ game, winner, quitter }: LeavePagePopupParams) => {
   const [showDialog, setShowDialog] = useState(false);
-  const router = useRouter()
-  const [{mutate: updateUserPoints, isPending}] = useUpdateUserPointsAtom()
+  const router = useRouter();
+  const [{ mutate: updateUserPoints, isPending }] = useUpdateUserPointsAtom();
 
   useEffect(() => {
-    const handleBeforeUnload = (event: any) => {
-      event.preventDefault();
-      event.returnValue = '';
-      setShowDialog(true);
-    };
+    if (!isPending) return;
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    function beforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+
+    window.addEventListener('beforeunload', beforeUnload);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('beforeunload', beforeUnload);
     };
-  }, []);
+  }, [isPending]);
 
-  const handleAccept = () => {
-    setShowDialog(false);
-    window.removeEventListener('beforeunload', () => {
-    });
-    window.location.href = (document as any).activeElement.href;
+  const handleLeavePage = (e: any) => {
+    if (!isPending) return;
+    e.preventDefault();
+    setShowDialog(true);
   };
 
-  const handleCancel = async () => {
+  useEffect(() => {
+    window.addEventListener('popstate', handleLeavePage);
+    return () => {
+      window.removeEventListener('popstate', handleLeavePage);
+    };
+  }, [isPending]);
+
+  const handleAccept = async () => {
     setShowDialog(false);
     await updateUserPoints({
       winner,
@@ -60,10 +67,14 @@ export const LeavePagePopup = ({game, winner, quitter}: LeavePagePopupParams) =>
     }, {
       onSettled: (results) => {
         if (results && results.status === 'fulfilled') {
-          router.push(NAVIGATION.Dashboard.Games)
+          router.push(NAVIGATION.Dashboard.Games);
         }
       }
-    })
+    });
+  };
+
+  const handleCancel = () => {
+    setShowDialog(false);
   };
 
   return (
@@ -77,10 +88,9 @@ export const LeavePagePopup = ({game, winner, quitter}: LeavePagePopupParams) =>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={handleCancel}>cancel</AlertDialogCancel>
-          <AlertDialogAction disabled={isPending} onClick={handleAccept}>leave</AlertDialogAction>
+          <AlertDialogAction disabled={isPending} onClick={handleAccept}>{isPending ? 'redirect...' : 'leave?'}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 };
-
