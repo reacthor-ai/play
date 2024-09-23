@@ -9,6 +9,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {X} from "lucide-react"
 import {CreateGameParams, useCreateGameAtom} from '@/store/game/create'
 import type {Category} from '@thor/db'
+import {useGetGameQuery} from "@/store/game/get";
 
 interface GameCreatorFormProps {
   onClose: Dispatch<SetStateAction<boolean>>
@@ -34,6 +35,7 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
   const [formError, setFormError] = useState<string | null>(null)
 
   const [{mutate: createGame, error, isPending}] = useCreateGameAtom()
+  const { config } = useGetGameQuery()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -59,6 +61,7 @@ export function CreateGame({onClose, userId, existingCategories}: GameCreatorFor
         onSettled: (data) => {
           if (data && data.status === 'fulfilled') {
             onClose(false)
+            config!.refetch()
           }
           if (data && data.status === 'rejected') {
             setFormError("Failed to create game. Please try again.")

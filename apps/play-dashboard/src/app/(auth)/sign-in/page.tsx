@@ -6,6 +6,7 @@ import {GithubIcon, Terminal} from "lucide-react"
 import {createClientComponentClient} from '@supabase/auth-helpers-nextjs'
 import type {Provider} from "@supabase/supabase-js"
 import {Alert, AlertDescription, AlertTitle,} from "@/components/ui/alert"
+import {getSupabaseAuthRedirectURL} from "@/utils/supabase/url";
 
 export default function AuthenticationPage() {
   const [loading, setLoading] = useState(false)
@@ -19,8 +20,12 @@ export default function AuthenticationPage() {
       const {error} = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
+          redirectTo: getSupabaseAuthRedirectURL(window.location.origin),
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
       })
       if (error) {
         setError(error.message || 'An unexpected error occurred')

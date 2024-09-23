@@ -1,14 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Loader2, Users, RefreshCw } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {useEffect, useState} from 'react'
+import {Loader2, RefreshCw, Users} from 'lucide-react'
+import {Button} from '@/components/ui/button'
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card'
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
+import {GameWithCategoryAndParticipantsAndEvaluations} from "@/lib/dashboard/games/evaluation/utils";
+import {createClient} from "@/utils/supabase/client";
 
-export function EvaluationLobby() {
+type EvaluationLobbyProps = {
+  game?: GameWithCategoryAndParticipantsAndEvaluations
+}
+
+export function EvaluationLobby({game}: EvaluationLobbyProps) {
   const [dots, setDots] = useState('.')
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const supabase = createClient()
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,6 +24,14 @@ export function EvaluationLobby() {
 
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    if (!game) return
+
+    const gameChannel = supabase.channel(`game:${game.id}`)
+
+    gameChannel.on('presence', {event: 'sync'}, () => {})
+  }, [game])
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
@@ -27,7 +42,7 @@ export function EvaluationLobby() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
       <Alert className="mb-8 max-w-md">
-        <Users className="h-4 w-4" />
+        <Users className="h-4 w-4"/>
         <AlertTitle>wait</AlertTitle>
         <AlertDescription>
           player is finishing their turn.
@@ -40,7 +55,7 @@ export function EvaluationLobby() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center space-x-2">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary"/>
             <p className="text-xl font-semibold">chill{dots}</p>
           </div>
 
@@ -56,12 +71,12 @@ export function EvaluationLobby() {
           >
             {isRefreshing ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                 Refreshing...
               </>
             ) : (
               <>
-                <RefreshCw className="mr-2 h-4 w-4" />
+                <RefreshCw className="mr-2 h-4 w-4"/>
                 refresh?
               </>
             )}

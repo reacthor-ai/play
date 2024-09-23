@@ -6,15 +6,9 @@ import {handlePrismaError} from "@/utils/prisma/error";
 export async function POST(req: Request) {
   const {
     winner,
-    quitter
+    quitter,
   } = await req.json()
   try {
-    if (!winner || !quitter) {
-      return NextResponse.json(
-        {error: 'winner and quitter are required'},
-        {status: 400}
-      )
-    }
 
     const updateQuittersPoints = prisma.user.update({
       where: { id: quitter.id },

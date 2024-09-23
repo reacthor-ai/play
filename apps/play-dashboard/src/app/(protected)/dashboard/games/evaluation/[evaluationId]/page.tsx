@@ -3,6 +3,7 @@ import {notFound} from "next/navigation";
 import {EvaluationRoom} from "@/lib/dashboard/games/evaluation";
 import {getUser} from "@/api/internal/user";
 import {NextPageProps} from "@/app/(protected)/types";
+import {EvaluationLobby} from "@/lib/dashboard/games/evaluation/EvaluationLobby";
 
 export default async function DashboardEvaluationPage(props: NextPageProps<{ evaluationId: string }>) {
   const gameId = props.params.evaluationId
@@ -26,9 +27,9 @@ export default async function DashboardEvaluationPage(props: NextPageProps<{ eva
     notFound()
   }
 
-  const checkEvaluation = game.evaluations.length <= 1
-  if (checkEvaluation) {
-    notFound()
+  const isPlayerWaiting = game.evaluations.length <= 1
+  if (isPlayerWaiting) {
+    return <EvaluationLobby game={game} />
   }
 
   return (

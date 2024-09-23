@@ -13,6 +13,10 @@ import {handlePrismaError} from "@/utils/prisma/error";
 import {prisma} from "@/utils/prisma/client";
 import {updateCreatorPoints, updateUserWinnerPoints} from "@/api/internal/user";
 
+
+export const maxDuration = 30;
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const {
@@ -56,7 +60,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const evaluationResult = await evaluateSubmissions((participantsWithSubmissions as unknown as any).map((r: any) => r.data!), game.prompt);
+    const evaluationResult = await evaluateSubmissions(
+      (participantsWithSubmissions as unknown as any).map((r: any) => r.data!),
+      game.prompt,
+      userId
+    );
 
     // Determine the winner
     const winnerIndex = evaluationResult.evaluations.reduce((maxIndex, evals, currentIndex, array) =>

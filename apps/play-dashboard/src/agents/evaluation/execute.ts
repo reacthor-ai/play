@@ -53,7 +53,7 @@ class AnthropicToolUseParser extends BaseOutputParser<any> {
   lc_namespace: string[] = ["evaluate_code_output"];
 
   async parse(message: string): Promise<any> {
-    if (message && typeof message === 'string') {
+    if (message) {
       const messages = JSON.parse(message) as MessageContent[];
       const tools = messages.find((m) => m.type === 'tool_use' && m.name === 'evaluate_code');
       const textMessage = messages.find((m) => m.type === 'text');
@@ -75,7 +75,7 @@ class AnthropicToolUseParser extends BaseOutputParser<any> {
 export const executeCodeEvaluationAgent = async (chatModel: ChatAnthropic) => {
   const prompt = ChatPromptTemplate.fromMessages([
     ["system", SYSTEM_PROMPT],
-    new MessagesPlaceholder("chat_history"),
+    new MessagesPlaceholder("evaluation_history"),
     ["human", "{input}"],
   ]);
 
@@ -110,6 +110,6 @@ export const executeCodeEvaluationAgent = async (chatModel: ChatAnthropic) => {
       });
     },
     inputMessagesKey: 'input',
-    historyMessagesKey: 'chat_history',
+    historyMessagesKey: 'evaluation_history',
   });
 };

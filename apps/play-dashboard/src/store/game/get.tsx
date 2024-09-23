@@ -1,8 +1,9 @@
-import type { Game, Category, GameParticipant } from '@thor/db'
-import { atom, useAtom } from 'jotai'
-import { createQueryAtom } from '@/store/createQueryAtom'
-import { useCallback, useEffect } from "react"
-import { API_ROUTES } from "@/utils/navigation/api"
+import type {Category, Game, GameParticipant} from '@thor/db'
+import {atom, useAtom} from 'jotai'
+import {createQueryAtom} from '@/store/createQueryAtom'
+import {useCallback, useEffect} from "react"
+import {API_ROUTES} from "@/utils/navigation/api"
+import {QueryObserverResult, RefetchOptions} from "@tanstack/react-query";
 
 export type GameWithCategoryAndParticipants = Game & { category: Category } & { participants: GameParticipant[] }
 
@@ -30,15 +31,18 @@ export function useGetGameQuery(): {
   game: GameWithCategoryAndParticipants[] | null
   isLoading: boolean,
   error: any
+  config?: {
+    refetch: (options?: RefetchOptions) => Promise<QueryObserverResult<any, any>>;
+  }
 };
-export function useGetGameQuery(initialCategoryId?: string) {
+export function useGetGameQuery(initialCategoryId?: string): any {
   const [, setGameId] = useAtom(gameIdAtom);
-  const [{ data, isLoading, error }] = useAtom(getGameQueryAtom);
+  const [{data, isLoading, error, refetch}] = useAtom(getGameQueryAtom);
 
   const handleFetchGame = useCallback(
     (id: string) => {
       if (id) {
-        setGameId({ id });
+        setGameId({id});
       }
     },
     [setGameId]
@@ -54,5 +58,8 @@ export function useGetGameQuery(initialCategoryId?: string) {
     game: data?.data ?? null,
     isLoading,
     error,
+    config: {
+      refetch
+    }
   };
 }

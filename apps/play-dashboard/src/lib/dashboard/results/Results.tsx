@@ -57,9 +57,10 @@ export function GameResultCards({games}: GameResult) {
                       <DialogTitle className="text-white text-xl lowercase">task: {gamesWithParticipants.prompt}</DialogTitle>
                     </DialogHeader>
                     <DialogDescription className="w-full">
-                      {gamesWithParticipants.participants.length >= 1 ? (
+                      {gamesWithParticipants.participants.length >= 2 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {gamesWithParticipants.participants.map((participant, index) => {
+                            if (!participant.submission) return
                             const result = extractCodeAndExplanation(JSON.parse(participant.submission as string).content);
                             const isWinner = gamesWithParticipants.winnerId === participant.userId
                             const evaluation = game.evaluations.find(d =>d.participantId === participant.id)

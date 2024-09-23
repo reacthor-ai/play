@@ -23,6 +23,7 @@ import GameLobby from "@/lib/dashboard/games/play/GameLobby/GameLobby";
 import {useCreateGameParticipantAtom} from "@/store/gamePartcipants/create";
 import {API_ROUTES} from "@/utils/navigation/api";
 import {LeavePagePopup} from "@/lib/dashboard/games/play/LeavePagePopup/LeavePagePopup";
+import {useUpdateUserPointsAtom} from "@/store/user/update-points";
 
 type Message = {
   text: string;
@@ -62,6 +63,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants, user:
   const [{
     mutate: createGameParticipant
   }] = useCreateGameParticipantAtom()
+  const [{ mutate: updateUserPoints }] = useUpdateUserPointsAtom();
 
   const {
     completion: player1Completion,
@@ -367,9 +369,32 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants, user:
     })
   }
 
+  const opponentPlayer = players.find(p => p.userId !== user?.id);
+
   const handleExitGame = async () => {
-    await supabase.from('Game').update({status: 'CANCELLED'}).eq('id', gameId)
-    router.push(NAVIGATION.Dashboard.Games)
+    try {
+      await updateUserPoints({
+        winner: {
+          id: opponentPlayer?.userId ?? '',
+          points: game.points
+        },
+        quitter: {
+          id: user.id,
+          points: game.points
+        }
+      }, {
+        onSettled: async (data) => {
+          if (data && data.status === 'fulfilled') {
+            await supabase.from('Game').update({status: 'CANCELLED'}).eq('id', gameId)
+              .then(() => {
+                router.push(NAVIGATION.Dashboard.Games)
+              })
+          }
+        }
+      })
+    } catch (error) {
+      toast.error('something. must have happened. wait for instructions or try again');
+    }
   }
 
   const updateCursorPosition = async (x: number, y: number) => {
@@ -394,14 +419,15 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants, user:
     }
   }
 
-  const opponentPlayer = players.find(p => p.userId !== user?.id);
-
   if (!user) {
     return <GameLobby/>
   }
 
   if (joinState !== 'joined') {
     return <GameLobby/>
+  }
+  if (loading) {
+    return <p>submitting wait a moment... this may take a couple seconds</p>
   }
   return (
     <div className="flex flex-col h-screen" onMouseMove={(e) => updateCursorPosition(e.clientX, e.clientY)}>
@@ -425,7 +451,7 @@ export const PlayerRoom: React.FC<{ game: GameWithCategoryAndParticipants, user:
         {joinState === 'joined' && (
           <div className="flex items-center space-x-2 bg-green-500 px-3 py-1 rounded-full">
             <UserPlus size={16}/>
-            <span>cool. both online. play,</span>
+            <span>{loading ? 'submitting wait' : 'cool.both online. play,'}</span>
           </div>
         )}
         <div className="flex items-center space-x-2">

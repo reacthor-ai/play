@@ -2,7 +2,7 @@ import {ChatAnthropic} from "@langchain/anthropic";
 import {executeCodeEvaluationAgent} from "@/agents/evaluation/execute";
 import {PickGameParticipants} from "@/api/internal/participant";
 
-export const evaluateSubmissions = async (submissions: PickGameParticipants[], instructions: string) => {
+export const evaluateSubmissions = async (submissions: PickGameParticipants[], instructions: string, userId: string) => {
   const chatModel = new ChatAnthropic({
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     model: "claude-3-opus-20240229",
@@ -23,7 +23,7 @@ ${submissions[1].submission}
 
 Please evaluate both code submissions based on the given instructions and provide scores, explanations, and determine a winner.`
   }, {
-    configurable: {sessionId: submissions[0].gameId}
+    configurable: {sessionId: userId}
   });
 
   return {

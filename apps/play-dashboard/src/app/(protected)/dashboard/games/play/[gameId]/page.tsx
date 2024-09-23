@@ -15,7 +15,8 @@ export default async function DashboardPlayerRoomPage(props: any) {
     where: {id: gameId},
     include: {
       category: true,
-      participants: true
+      participants: true,
+      evaluations: true
     },
   })
 
@@ -25,7 +26,7 @@ export default async function DashboardPlayerRoomPage(props: any) {
     notFound()
   }
 
-  if (game.participants.length === 2 || game.status === GameStatus.COMPLETED) {
+  if (game.evaluations.length === 2 || game.status === GameStatus.COMPLETED) {
     notFound()
   }
 
